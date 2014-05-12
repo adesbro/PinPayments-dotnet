@@ -14,6 +14,9 @@ namespace PinPayments.Model
         [DataMember(Name = "number")]
         public string Number { get; set; }
 
+        [DataMember(Name = "display_number")]
+        public string DisplayNumber { get; set; }
+
         [DataMember(Name = "expiry_month")]
         public int ExpiryMonth { get; set; }
 

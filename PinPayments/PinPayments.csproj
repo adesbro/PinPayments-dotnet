@@ -55,6 +55,18 @@
     <Compile Include="Model\ChargeResponse.cs" />
     <Compile Include="Model\ChargeResult.cs" />
     <Compile Include="Model\ChargeSearch.cs" />
+    <Compile Include="Model\Customer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Model\CustomerListResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Model\CustomerResponse.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Model\CustomerUpdate.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Model\ErrorMessage.cs" />
     <Compile Include="Model\Pagination.cs" />
     <Compile Include="Model\PinError.cs" />

@@ -196,5 +196,123 @@ namespace PinPayments
             request.AddParameter(chargeSearch, s => s.Direction, ParameterType.QueryString);
             return request;
         }
+
+        public CustomerResponse CreateCustomer(Customer customer)
+        {
+            var request = CreateCustomerRequest(customer);
+            return Execute<CustomerResponse>(request);
+        }
+
+        public Task<CustomerResponse> CreateCustomerAsync(Customer customer)
+        {
+            var request = CreateCustomerRequest(customer);
+            return ExecuteAsync<CustomerResponse>(request);
+        }
+
+        private static RestRequest CreateCustomerRequest(Customer customer)
+        {
+            var request = new RestRequest(Method.POST)
+            {
+                Resource = "1/customers",
+                RequestFormat = DataFormat.Json,
+                RootElement = "Customer",
+                JsonSerializer = new RestSharpDataContractJsonSerializer()
+            };
+            request.AddBody(customer);
+            return request;
+        }
+
+        public CustomerResponse GetCustomer(string customerToken)
+        {
+            var request = GetCustomerRequest(customerToken);
+            return Execute<CustomerResponse>(request);
+        }
+
+        public Task<CustomerResponse> GetCustomerAsync(string customerToken)
+        {
+            var request = GetCustomerRequest(customerToken);
+            return ExecuteAsync<CustomerResponse>(request);
+        }
+
+        private static RestRequest GetCustomerRequest(string customerToken)
+        {
+            var request = new RestRequest(Method.GET)
+            {
+                Resource = "1/customers/{customer-token}"
+            };
+
+            request.AddParameter("customer-token", customerToken, ParameterType.UrlSegment);
+            return request;
+        }
+
+        public CustomerListResponse GetCustomers()
+        {
+            var request = GetCustomersRequest();
+            return Execute<CustomerListResponse>(request);
+        }
+
+        public Task<CustomerListResponse> GetCustomersAsync()
+        {
+            var request = GetCustomersRequest();
+            return ExecuteAsync<CustomerListResponse>(request);
+        }
+
+        private static RestRequest GetCustomersRequest()
+        {
+            return new RestRequest(Method.GET)
+            {
+                Resource = "1/customers"
+            };
+        }
+
+        public CustomerResponse UpdateCustomer(string customerToken, CustomerUpdate customerUpdate)
+        {
+            var request = UpdateCustomerRequest(customerToken, customerUpdate);
+            return Execute<CustomerResponse>(request);
+        }
+
+        public Task<CustomerResponse> UpdateCustomerAsync(string customerToken, CustomerUpdate customerUpdate)
+        {
+            var request = UpdateCustomerRequest(customerToken, customerUpdate);
+            return ExecuteAsync<CustomerResponse>(request);
+        }
+
+        private static RestRequest UpdateCustomerRequest(string customerToken, CustomerUpdate customerUpdate)
+        {
+            var request = new RestRequest(Method.PUT)
+            {
+                Resource = "1/customers/{customer-token}",
+                RequestFormat = DataFormat.Json,
+                RootElement = "Customer",
+                JsonSerializer = new RestSharpDataContractJsonSerializer()
+            };
+
+            request.AddParameter("customer-token", customerToken, ParameterType.UrlSegment);            
+            request.AddBody(customerUpdate);
+            return request;
+        }
+
+        public ChargeListResponse GetCustomerCharges(string customerToken)
+        {
+            var request = GetCustomerChargesRequest(customerToken);
+            return Execute<ChargeListResponse>(request);
+        }
+
+        public Task<ChargeListResponse> GetCustomerChargesAsync(string customerToken)
+        {
+            var request = GetCustomerChargesRequest(customerToken);
+            return ExecuteAsync<ChargeListResponse>(request);
+        }
+
+        private static RestRequest GetCustomerChargesRequest(string customerToken)
+        {
+            var request = new RestRequest(Method.GET)
+            {
+                Resource = "1/customers/{customer-token}/charges"
+            };
+            
+            request.AddParameter("customer-token", customerToken, ParameterType.UrlSegment);
+            return request;
+        }
     }
 }

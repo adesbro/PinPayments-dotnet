@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using PinPayments.Model;
 
@@ -32,18 +33,204 @@ namespace PinPayments.Tests
                 Capture = true, // authorise AND charge 
                 Currency = "AUD",
                 Description = "This is a description of the product, isn't it awesome.",
-                Email = "email@test.com",
+                Email = "email@example.com",
                 IpAddress = "127.0.0.1"
             };
 
-            // TODO: set secret key here before running!
-            var api = new PinPaymentsApi("?????");
+            var api = new PinPaymentsApi();
             var response = api.CreateCharge(charge);
 
             Assert.IsNotNull(response);
             Assert.IsNotNull(response.Charge);
             Assert.IsTrue(response.Charge.Success);
             Assert.IsTrue(!string.IsNullOrEmpty(response.Charge.Token));
+        }
+
+        [TestMethod]
+        [TestCategory("Spike")]
+        public void Spike_Create_Customer_Return_Token_And_Refetch()
+        {
+            var emailAddress = string.Format("test-{0}@example.com", Guid.NewGuid());
+           
+            var card = new Card
+            {
+                Number = "5520000000000000", // Good
+                Cvc = "111",
+                ExpiryMonth = DateTime.Today.Month,
+                ExpiryYear = (DateTime.Today.Year + 1),
+                Name = "Test Name",
+                AddressLine1 = "555 Wicked St",
+                AddressCity = "Perth",
+                AddressPostcode = "6000",
+                AddressState = "WA",
+                AddressCountry = "Australia"
+            };
+
+            var customer = new Customer
+            {
+                Email = emailAddress,
+                Card = card
+            };
+
+            var api = new PinPaymentsApi();
+            var response = api.CreateCustomer(customer);
+
+            Assert.IsNotNull(response);
+            Assert.IsNotNull(response.Customer);
+            Assert.IsNotNull(response.Customer.Token);
+            Assert.IsNotNull(response.Customer.Card);
+            Assert.IsNotNull(response.Customer.Card.Token);
+            Assert.IsNull(response.Customer.Card.Number);
+            Assert.IsNotNull(response.Customer.Card.DisplayNumber);
+            Assert.IsTrue(response.Customer.Email == emailAddress);
+
+            var token = response.Customer.Token;
+            var response2 = api.GetCustomer(token);
+
+            Assert.IsNotNull(response2);
+            Assert.IsNotNull(response2.Customer);
+            Assert.IsNotNull(response2.Customer.Token);
+            Assert.IsNotNull(response2.Customer.Card);
+            Assert.IsNotNull(response2.Customer.Card.Token);
+            Assert.IsNull(response2.Customer.Card.Number);
+            Assert.IsNotNull(response2.Customer.Card.DisplayNumber);
+            Assert.IsTrue(response2.Customer.Email == emailAddress);
+        }
+
+        [TestMethod]
+        [TestCategory("Spike")]
+        public void Spike_Create_Customer_Update_Customer()
+        {
+            var emailAddress = string.Format("test-{0}@example.com", Guid.NewGuid());
+
+            var card = new Card
+            {
+                Number = "5520000000000000", // Good
+                Cvc = "111",
+                ExpiryMonth = DateTime.Today.Month,
+                ExpiryYear = (DateTime.Today.Year + 1),
+                Name = "Test Name",
+                AddressLine1 = "555 Incorrect St",
+                AddressCity = "Perth",
+                AddressPostcode = "6000",
+                AddressState = "WA",
+                AddressCountry = "Australia"
+            };
+
+            var customer = new Customer
+            {
+                Email = emailAddress,
+                Card = card
+            };
+
+            var api = new PinPaymentsApi();
+            var response = api.CreateCustomer(customer);
+
+            Assert.IsNotNull(response);
+            Assert.IsNotNull(response.Customer);
+            Assert.IsNotNull(response.Customer.Token);
+            Assert.IsNotNull(response.Customer.Card);
+            Assert.IsNotNull(response.Customer.Card.Token);
+            Assert.IsNull(response.Customer.Card.Number);
+            Assert.IsNotNull(response.Customer.Card.DisplayNumber);
+            Assert.IsTrue(response.Customer.Email == emailAddress);
+
+            card.AddressLine1 = "555 Updated St";
+            var customerUpdate = new CustomerUpdate
+            {
+                Card = card,
+                Email = emailAddress
+            };
+            var response2 = api.UpdateCustomer(response.Customer.Token, customerUpdate);
+
+            Assert.IsNotNull(response2);
+            Assert.IsNotNull(response2.Customer);
+            Assert.IsNotNull(response2.Customer.Token);
+            Assert.IsNotNull(response2.Customer.Card);
+            Assert.IsNotNull(response2.Customer.Card.Token);
+            Assert.IsNull(response2.Customer.Card.Number);
+            Assert.IsNotNull(response2.Customer.Card.DisplayNumber);
+            Assert.IsTrue(response2.Customer.Card.AddressLine1 == card.AddressLine1);
+            Assert.IsTrue(response2.Customer.Email == emailAddress);
+        }
+
+        [TestMethod]
+        [TestCategory("Spike")]
+        public void Spike_Get_Customer_List()
+        {
+            var api = new PinPaymentsApi();
+            var response = api.GetCustomers();
+
+            Assert.IsNotNull(response);
+            Assert.IsNotNull(response.Customers);
+            Assert.IsTrue(response.Customers.Count > 0);
+            Assert.IsNotNull(response.Pages);
+        }
+
+
+        [TestMethod]
+        [TestCategory("Spike")]
+        public void Spike_Create_Customer_Create_Charge_And_Fetch_Customers_Charges()
+        {
+            var emailAddress = string.Format("test-{0}@example.com", Guid.NewGuid());
+
+            var card = new Card
+            {
+                Number = "5520000000000000", // Good
+                Cvc = "111",
+                ExpiryMonth = DateTime.Today.Month,
+                ExpiryYear = (DateTime.Today.Year + 1),
+                Name = "Test Name",
+                AddressLine1 = "555 Dopey St",
+                AddressCity = "Perth",
+                AddressPostcode = "6000",
+                AddressState = "WA",
+                AddressCountry = "Australia"
+            };
+
+            var customer = new Customer
+            {
+                Email = emailAddress,
+                Card = card
+            };
+
+            var api = new PinPaymentsApi();
+            var response = api.CreateCustomer(customer);
+
+            Assert.IsNotNull(response);
+            Assert.IsNotNull(response.Customer);
+            Assert.IsNotNull(response.Customer.Token);
+            Assert.IsNotNull(response.Customer.Card);
+            Assert.IsNotNull(response.Customer.Card.Token);
+            Assert.IsNull(response.Customer.Card.Number);
+            Assert.IsNotNull(response.Customer.Card.DisplayNumber);
+            Assert.IsTrue(response.Customer.Email == emailAddress);
+
+            var charge = new Charge
+            {
+                Amount = 2995, // $29.95
+                CustomerToken = response.Customer.Token,
+                Capture = true, // authorise AND charge 
+                Currency = "AUD",
+                Description = "This is a description of the product, isn't it awesome.",
+                Email = "email@example.com",
+                IpAddress = "127.0.0.1"
+            };
+
+            var response2 = api.CreateCharge(charge);
+
+            Assert.IsNotNull(response2);
+            Assert.IsNotNull(response2.Charge);
+            Assert.IsTrue(response2.Charge.Success);
+            Assert.IsTrue(!string.IsNullOrEmpty(response2.Charge.Token));
+
+            var response3 = api.GetCustomerCharges(response.Customer.Token);
+
+            Assert.IsNotNull(response3);
+            Assert.IsNotNull(response3.Charges);
+            Assert.IsTrue(response3.Charges.Count > 0);
+            Assert.IsTrue(response3.Charges.Any(c => c.Amount == charge.Amount));
+            Assert.IsNotNull(response3.Pages);
         }
     }
 }

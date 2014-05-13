@@ -314,5 +314,55 @@ namespace PinPayments
             request.AddParameter("customer-token", customerToken, ParameterType.UrlSegment);
             return request;
         }
+
+        public RefundResponse CreateRefund(string chargeToken, int? amount = null)
+        {
+            var request = CreateRefundRequest(chargeToken, amount);
+            return Execute<RefundResponse>(request);
+        }
+
+        public Task<RefundResponse> CreateRefundAsync(string chargeToken, int? amount = null)
+        {
+            var request = CreateRefundRequest(chargeToken, amount);
+            return ExecuteAsync<RefundResponse>(request);
+        }
+
+        private static RestRequest CreateRefundRequest(string chargeToken, int? amount)
+        {
+            var request = new RestRequest(Method.POST)
+            {
+                Resource = "1/charges/{charge-token}/refunds"
+            };
+
+            request.AddParameter("charge-token", chargeToken, ParameterType.UrlSegment);
+            if (amount.HasValue)
+            {
+                request.AddParameter("amount", amount.Value, ParameterType.QueryString);
+            }
+            return request;
+        }
+
+        public RefundListResponse GetRefunds(string chargeToken)
+        {
+            var request = GetRefundsRequest(chargeToken);
+            return Execute<RefundListResponse>(request);
+        }
+
+        public Task<RefundListResponse> GetRefundsAsync(string chargeToken)
+        {
+            var request = GetRefundsRequest(chargeToken);
+            return ExecuteAsync<RefundListResponse>(request);
+        }
+
+        private static RestRequest GetRefundsRequest(string chargeToken)
+        {
+            var request = new RestRequest(Method.GET)
+            {
+                Resource = "1/charges/{charge-token}/refunds"
+            };
+
+            request.AddParameter("charge-token", chargeToken, ParameterType.UrlSegment);
+            return request;
+        }
     }
 }

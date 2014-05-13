@@ -167,7 +167,6 @@ namespace PinPayments.Tests
             Assert.IsNotNull(response.Pages);
         }
 
-
         [TestMethod]
         [TestCategory("Spike")]
         public void Spike_Create_Customer_Create_Charge_And_Fetch_Customers_Charges()
@@ -231,6 +230,59 @@ namespace PinPayments.Tests
             Assert.IsTrue(response3.Charges.Count > 0);
             Assert.IsTrue(response3.Charges.Any(c => c.Amount == charge.Amount));
             Assert.IsNotNull(response3.Pages);
+        }
+
+        [TestMethod]
+        [TestCategory("Spike")]
+        public void Spike_Create_Charge_Get_Refund_List_Refunds()
+        {
+            var card = new Card
+            {
+                Number = "5520000000000000", // Good
+                Cvc = "111",
+                ExpiryMonth = DateTime.Today.Month,
+                ExpiryYear = (DateTime.Today.Year + 1),
+                Name = "Gordon Bennet",
+                AddressLine1 = "123 Kellogs St",
+                AddressCity = "Perth",
+                AddressPostcode = "6000",
+                AddressState = "WA",
+                AddressCountry = "Australia"
+            };
+
+            var charge = new Charge
+            {
+                Amount = 10000, // $95.00
+                Card = card,
+                Capture = true, // authorise AND charge 
+                Currency = "AUD",
+                Description = "This is a description of the product, isn't it awesome.",
+                Email = "email@example.com",
+                IpAddress = "127.0.0.1"
+            };
+
+            var api = new PinPaymentsApi();
+            var response = api.CreateCharge(charge);
+
+            Assert.IsNotNull(response);
+            Assert.IsNotNull(response.Charge);
+            Assert.IsTrue(response.Charge.Success);
+            Assert.IsTrue(!string.IsNullOrEmpty(response.Charge.Token));
+
+            var chargeToken = response.Charge.Token;
+
+            var response2 = api.CreateRefund(chargeToken, charge.Amount / 2); // refund half of it back
+
+            Assert.IsNotNull(response2);
+            Assert.IsNotNull(response2.Refund);
+            Assert.IsTrue(response2.Refund.ChargeToken == chargeToken);
+
+            var response3 = api.GetRefunds(chargeToken);
+
+            Assert.IsNotNull(response3);
+            Assert.IsNotNull(response3.Refunds);
+            Assert.IsTrue(response3.Refunds.Count == 1);
+            Assert.IsTrue(response3.Refunds[0].Token == response2.Refund.Token);
         }
     }
 }

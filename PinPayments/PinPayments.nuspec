@@ -8,7 +8,7 @@
     <owners>$author$</owners>
     <licenseUrl>https://github.com/adesbro/PinPayments-dotnet/blob/master/LICENSE.txt</licenseUrl>
     <projectUrl>https://github.com/adesbro/PinPayments-dotnet</projectUrl>
-    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <releaseNotes>Please note this is not a fully functional release.</releaseNotes>
     <copyright>Copyright 2014 Adrian Brown</copyright>

@@ -364,5 +364,30 @@ namespace PinPayments
             request.AddParameter("charge-token", chargeToken, ParameterType.UrlSegment);
             return request;
         }
+
+        public CardResponse CreateCardToken(Card card)
+        {
+            var request = CreateCardTokenRequest(card);
+            return Execute<CardResponse>(request);
+        }
+
+        public Task<CardResponse> CreateCardTokenAsync(Card card)
+        {
+            var request = CreateCardTokenRequest(card);
+            return ExecuteAsync<CardResponse>(request);
+        }
+
+        private static RestRequest CreateCardTokenRequest(Card card)
+        {
+            var request = new RestRequest(Method.POST)
+            {
+                Resource = "1/cards",
+                RequestFormat = DataFormat.Json,
+                RootElement = "Card",
+                JsonSerializer = new RestSharpDataContractJsonSerializer()
+            };
+            request.AddBody(card);
+            return request;
+        }
     }
 }

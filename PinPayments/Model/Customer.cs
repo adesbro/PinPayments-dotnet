@@ -23,5 +23,8 @@ namespace PinPayments.Model
 
         [DataMember(Name = "card")]
         public Card Card { get; set; }
+
+        [DataMember(Name = "card_token")]
+        public string CardToken { get; set; }
     }
 }

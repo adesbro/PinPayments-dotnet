@@ -48,7 +48,51 @@ namespace PinPayments.Tests
 
         [TestMethod]
         [TestCategory("Spike")]
-        public void Spike_Create_Customer_Return_Token_And_Refetch()
+        public void Spike_Create_Charge_With_Card_Token_Returns_Charge_Details()
+        {
+            var card = new Card
+            {
+                Number = "5520000000000000", // Good
+                Cvc = "111",
+                ExpiryMonth = DateTime.Today.Month,
+                ExpiryYear = (DateTime.Today.Year + 1),
+                Name = "Gordon Bennet",
+                AddressLine1 = "123 Kellogs St",
+                AddressCity = "Perth",
+                AddressPostcode = "6000",
+                AddressState = "WA",
+                AddressCountry = "Australia"
+            };
+
+            var api = new PinPaymentsApi();
+            var response = api.CreateCardToken(card);
+
+            Assert.IsNotNull(response);
+            Assert.IsNotNull(response.Card);
+            Assert.IsNotNull(response.Card.Token);
+
+            var charge = new Charge
+            {
+                Amount = 9500, // $95.00
+                CardToken = response.Card.Token,
+                Capture = true, // authorise AND charge 
+                Currency = "AUD",
+                Description = "This is a description of the product, isn't it awesome.",
+                Email = "email@example.com",
+                IpAddress = "127.0.0.1"
+            };
+
+            var response2 = api.CreateCharge(charge);
+
+            Assert.IsNotNull(response2);
+            Assert.IsNotNull(response2.Charge);
+            Assert.IsTrue(response2.Charge.Success);
+            Assert.IsTrue(!string.IsNullOrEmpty(response2.Charge.Token));
+        }
+
+        [TestMethod]
+        [TestCategory("Spike")]
+        public void Spike_Create_Customer_With_Card_Return_Token_And_Refetch()
         {
             var emailAddress = string.Format("test-{0}@example.com", Guid.NewGuid());
            
@@ -95,6 +139,63 @@ namespace PinPayments.Tests
             Assert.IsNull(response2.Customer.Card.Number);
             Assert.IsNotNull(response2.Customer.Card.DisplayNumber);
             Assert.IsTrue(response2.Customer.Email == emailAddress);
+        }
+
+        [TestMethod]
+        [TestCategory("Spike")]
+        public void Spike_Create_Customer_With_Card_Token_Return_Customer_Token_And_Refetch()
+        {
+            var emailAddress = string.Format("test-{0}@example.com", Guid.NewGuid());
+
+            var card = new Card
+            {
+                Number = "5520000000000000", // Good
+                Cvc = "111",
+                ExpiryMonth = DateTime.Today.Month,
+                ExpiryYear = (DateTime.Today.Year + 1),
+                Name = "Test Name",
+                AddressLine1 = "555 Wicked St",
+                AddressCity = "Perth",
+                AddressPostcode = "6000",
+                AddressState = "WA",
+                AddressCountry = "Australia"
+            };
+
+            var api = new PinPaymentsApi();
+            var response = api.CreateCardToken(card);
+
+            Assert.IsNotNull(response);
+            Assert.IsNotNull(response.Card);
+            Assert.IsNotNull(response.Card.Token);
+
+            var customer = new Customer
+            {
+                Email = emailAddress,
+                CardToken = response.Card.Token
+            };
+
+            var response2 = api.CreateCustomer(customer);
+
+            Assert.IsNotNull(response2);
+            Assert.IsNotNull(response2.Customer);
+            Assert.IsNotNull(response2.Customer.Token);
+            Assert.IsNotNull(response2.Customer.Card);
+            Assert.IsNotNull(response2.Customer.Card.Token);
+            Assert.IsNull(response2.Customer.Card.Number);
+            Assert.IsNotNull(response2.Customer.Card.DisplayNumber);
+            Assert.IsTrue(response2.Customer.Email == emailAddress);
+
+            var token = response2.Customer.Token;
+            var response3 = api.GetCustomer(token);
+
+            Assert.IsNotNull(response3);
+            Assert.IsNotNull(response3.Customer);
+            Assert.IsNotNull(response3.Customer.Token);
+            Assert.IsNotNull(response3.Customer.Card);
+            Assert.IsNotNull(response3.Customer.Card.Token);
+            Assert.IsNull(response3.Customer.Card.Number);
+            Assert.IsNotNull(response3.Customer.Card.DisplayNumber);
+            Assert.IsTrue(response3.Customer.Email == emailAddress);
         }
 
         [TestMethod]

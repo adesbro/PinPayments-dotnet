@@ -50,6 +50,7 @@
     <Compile Include="Config\ServerElement.cs" />
     <Compile Include="HttpStatusCodeExtensions.cs" />
     <Compile Include="Model\Card.cs" />
+    <Compile Include="Model\CardResponse.cs" />
     <Compile Include="Model\Charge.cs" />
     <Compile Include="Model\ChargeListResponse.cs" />
     <Compile Include="Model\ChargeResponse.cs" />

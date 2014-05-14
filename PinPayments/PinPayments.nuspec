@@ -10,7 +10,7 @@
     <projectUrl>https://github.com/adesbro/PinPayments-dotnet</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <releaseNotes>Please note this is not a fully functional release.</releaseNotes>
+    <releaseNotes>The latest release contains all methods for all corresponding Pin Payments API methods. However, it requires a lot of testing and should therefore be classified as unstable.</releaseNotes>
     <copyright>Copyright 2014 Adrian Brown</copyright>
     <tags>PinPayments .NET C# API</tags>
   </metadata>

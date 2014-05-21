@@ -80,6 +80,7 @@
     <Compile Include="Model\RefundResponse.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Model\Transfer.cs" />
     <Compile Include="PinPaymentsApi.cs" />
     <Compile Include="PinPaymentsException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

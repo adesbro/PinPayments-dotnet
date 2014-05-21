@@ -41,6 +41,11 @@ namespace PinPayments
         {
             var name = GetParameterName(memberExpression);
             var value = expression.Compile()(model);
+            return AddParameterNotNull(request, name, value, paramaterType);
+        }
+
+        public static IRestRequest AddParameterNotNull(this IRestRequest request, string name, object value, ParameterType paramaterType)
+        {
             return value == null
                 ? request
                 : request.AddParameter(name, value, paramaterType);

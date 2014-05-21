@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace PinPayments.Model
@@ -32,6 +33,9 @@ namespace PinPayments.Model
 
         [DataMember(Name = "authorisation_expired")]
         public bool AuthorisationExpired { get; set; }
+
+        [DataMember(Name = "transfer")]
+        public List<Transfer> Transfers { get; set; }
 
         [DataMember(Name = "amount_refunded")]
         public int AmountRefunded { get; set; }

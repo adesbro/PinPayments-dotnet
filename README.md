@@ -2,14 +2,10 @@ PinPayments-dotnet
 ==================
 
 A simple .NET client for [Pin Payments][] REST API:
+- All Pin Payments methods (Charges, Customers, Refunds, Card Tokens)
 - Async versions of all methods 
-- Uses RestSharp for the heavy lifting
+- Uses RestSharp for the heavy lifting (a very well maintained REST API client)
 [Pin Payments]: https://pin.net.au/
-
-
-### NOTE: This is still a work in progress. 
-
-Whilst the core of the functionality is there, a lot of testing is required. Volunteers always welcome!
 
 ### Download
 
